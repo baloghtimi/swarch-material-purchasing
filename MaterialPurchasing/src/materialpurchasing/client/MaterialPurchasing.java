@@ -1,5 +1,7 @@
 package materialpurchasing.client;
 
+import materialpurchasing.client.serverCommunication.GreetingService;
+import materialpurchasing.client.serverCommunication.GreetingServiceAsync;
 import materialpurchasing.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;

@@ -1,6 +1,6 @@
 package materialpurchasing.server;
 
-import materialpurchasing.client.GreetingService;
+import materialpurchasing.client.serverCommunication.GreetingService;
 import materialpurchasing.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
