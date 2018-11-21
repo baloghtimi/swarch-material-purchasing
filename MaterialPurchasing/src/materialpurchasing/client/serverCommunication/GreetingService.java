@@ -1,4 +1,4 @@
-package materialpurchasing.client;
+package materialpurchasing.client.serverCommunication;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

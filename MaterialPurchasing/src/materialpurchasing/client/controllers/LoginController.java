@@ -46,7 +46,7 @@ public class LoginController {
 	
 	public void sendLoginFailedEvent() {
 		for (LoginEvent listener : this.loginEventListeners) {
-			listener.loginFailed();;
+			listener.loginFailed();
 		}
 	}
 	
@@ -58,7 +58,7 @@ public class LoginController {
 	
 	public void sendRegistrationFailedEvent() {
 		for (LoginEvent listener : this.loginEventListeners) {
-			listener.loginFailed();;
+			listener.loginFailed();
 		}
 	}
 
