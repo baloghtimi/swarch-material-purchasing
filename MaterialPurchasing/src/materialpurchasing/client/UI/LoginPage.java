@@ -21,6 +21,7 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import materialpurchasing.client.controllers.LoginController;
 import materialpurchasing.client.events.LoginEvent;
+import materialpurchasing.shared.user.User;
 
 public class LoginPage implements IsWidget, LoginEvent {
 
@@ -116,6 +117,7 @@ public class LoginPage implements IsWidget, LoginEvent {
 
 	@Override
 	public void loginSuccessful() {
+		//LoginController.getInstance().getUserType();
 		BuyerPage buyerPage = new BuyerPage();
 		RootPanel.get().add(buyerPage.asWidget());
 	}
@@ -142,6 +144,12 @@ public class LoginPage implements IsWidget, LoginEvent {
 		dialog.setResizable(false);
 		dialog.add(new Label(label));
 		dialog.show();
+	}
+
+	@Override
+	public void logOut() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

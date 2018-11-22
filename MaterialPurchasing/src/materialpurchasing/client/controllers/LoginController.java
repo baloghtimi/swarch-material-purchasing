@@ -5,12 +5,14 @@ import java.util.List;
 
 import materialpurchasing.client.events.LoginEvent;
 import materialpurchasing.client.serverCommunication.LoginService;
+import materialpurchasing.shared.user.User;
+import materialpurchasing.shared.user.UserType;
 
 public class LoginController {
 	
 	LoginService loginService=new LoginService();
 	
-	private String currentUser="";
+	private User currentUser=new User();
 
 	// Singelton Design Pattern
 	private static LoginController instance = null;
@@ -37,7 +39,7 @@ public class LoginController {
 		this.loginEventListeners.remove(listener);
 	}
 
-	public void sendLoginSuccessfulEvent(String currentUser) {
+	public void sendLoginSuccessfulEvent(User currentUser) {
 		this.currentUser=currentUser;
 		for (LoginEvent listener : this.loginEventListeners) {
 			listener.loginSuccessful();
@@ -61,6 +63,12 @@ public class LoginController {
 			listener.loginFailed();
 		}
 	}
+	
+	public void sendLogOutEvent() {
+		for (LoginEvent listener : this.loginEventListeners) {
+			listener.logOut();
+		}
+	}
 
 	/*
 	 * Returns a LoginEvent
@@ -76,12 +84,29 @@ public class LoginController {
 		loginService.SendLogin(userID,password);
 	}
 	
-	public String getCurrentUser() {
+	/*
+	 * Set UserStatus
+	 * */
+	public void setUserStatus(UserType ut) {
+		this.currentUser.setUserType(ut);
+		loginService.SendUserStatusUpdate(getCurrentUser(),ut);
+	}
+	
+	
+	public UserType getUserType() {
+		return getCurrentUser().getUserType();
+	}
+	
+	public String getUserId() {
+		return getCurrentUser().getId();
+	}
+	
+	private User getCurrentUser() {
 		return this.currentUser;
 	}
 	
 	public void logout() {
-		this.currentUser="";
+		this.currentUser=null;
 	}
 
 }

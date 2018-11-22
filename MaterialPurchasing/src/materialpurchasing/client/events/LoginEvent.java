@@ -1,6 +1,5 @@
 package materialpurchasing.client.events;
 
-
 public abstract interface LoginEvent {
 	
 	public abstract void loginSuccessful();
@@ -10,5 +9,7 @@ public abstract interface LoginEvent {
 	public abstract void registrationSuccessful();
 	
 	public abstract void registrationFailed();
+	
+	public abstract void logOut();
 
 }
