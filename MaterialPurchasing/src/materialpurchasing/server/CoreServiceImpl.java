@@ -2,8 +2,11 @@ package materialpurchasing.server;
 
 import materialpurchasing.client.serverCommunication.CoreService;
 import materialpurchasing.server.login.LoginServiceImpl;
+import materialpurchasing.shared.component.BaseComponent;
 import materialpurchasing.shared.user.User;
 import materialpurchasing.shared.user.UserType;
+
+import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -28,5 +31,11 @@ public class CoreServiceImpl extends RemoteServiceServlet implements CoreService
 	@Override
 	public Boolean SendUserStatusUpdateToServer(User currentUser, UserType ut) {
 		return loginServiceImpl.SendUserStatusUpdateToServer(currentUser, ut);
+	}
+
+	@Override
+	public ArrayList<BaseComponent> getBaseComponents() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

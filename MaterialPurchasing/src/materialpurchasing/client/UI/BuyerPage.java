@@ -11,7 +11,7 @@ import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
 
-import materialpurchasing.client.component.BaseComponent;
+import materialpurchasing.shared.component.BaseComponent;
 
 public class BuyerPage implements IsWidget {
 

@@ -1,7 +1,10 @@
 package materialpurchasing.client.serverCommunication;
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import materialpurchasing.shared.component.BaseComponent;
 import materialpurchasing.shared.user.User;
 import materialpurchasing.shared.user.UserType;
 
@@ -16,4 +19,6 @@ public interface CoreServiceAsync {
 	void SendRegistrationToServer(String userID, String password, AsyncCallback<Boolean> callback);
 
 	void SendUserStatusUpdateToServer(User currentUser, UserType ut, AsyncCallback<Boolean> callback);
+
+	void getBaseComponents(AsyncCallback<ArrayList<BaseComponent>> callback);
 }

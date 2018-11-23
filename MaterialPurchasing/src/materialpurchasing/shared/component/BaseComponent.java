@@ -1,39 +1,37 @@
 package materialpurchasing.shared.component;
 
-public class BaseComponent {
+import java.io.Serializable;
 
-	private String name;
-	private Double price;
-	private Integer acquireTime;
+public class BaseComponent extends Component implements Serializable{
 
-	public BaseComponent(String name, Double price, Integer acquireTime) {
-		this.name = name;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6400213413501876005L;
+	private Integer price;
+	private Integer purchaseTime;
+	
+	protected BaseComponent() {
+		
+	}
+	
+	public BaseComponent(Long id, String name,Integer price, Integer purchaseTime) {
+		super(id, name);
 		this.price = price;
-		this.acquireTime = acquireTime;
+		this.purchaseTime = purchaseTime;
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Double getPrice() {
+	public Integer getPrice() {
 		return price;
 	}
-
-	public void setPrice(Double price) {
+	public void setPrice(Integer price) {
 		this.price = price;
 	}
-
-	public Integer getAcquireTime() {
-		return acquireTime;
+	public Integer getPurchaseTime() {
+		return purchaseTime;
 	}
-
-	public void setAcquireTime(Integer acquireTime) {
-		this.acquireTime = acquireTime;
+	public void setPurchaseTime(Integer purchaseTime) {
+		this.purchaseTime = purchaseTime;
 	}
-
+	
+	
 }
