@@ -18,7 +18,7 @@ public interface CoreService extends RemoteService {
 
 	User SendLoginToServer(String userID, String password);
 
-	Boolean SendRegistrationToServer(String userID, String password);
+	Boolean SendRegistrationToServer(String userID, String password, UserType userType);
 
 	Boolean SendUserStatusUpdateToServer(User currentUser, UserType ut);
 	

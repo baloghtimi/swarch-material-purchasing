@@ -17,7 +17,7 @@ public class ProductController {
 	private static ProductController instance = null;
 
 	protected ProductController() {
-		
+
 	}
 
 	public static ProductController getInstance() {
@@ -37,64 +37,63 @@ public class ProductController {
 	public void removeObserver(ProductEvent listener) {
 		this.productEventListeners.remove(listener);
 	}
-	
-	public ArrayList<Product> getCurrentProducts(){
+
+	public List<Product> getCurrentProducts() {
 		return new ArrayList<>(currentProducts.values());
 	}
-	
+
 	public void sendProductAddedEvent(Boolean result) {
 		for (ProductEvent listener : this.productEventListeners) {
 			listener.productAddedEvent(result);
 		}
 	}
-	
+
 	public void sendProductModifiedEvent(Boolean result) {
 		for (ProductEvent listener : this.productEventListeners) {
 			listener.productModifiedEvent(result);
 		}
 	}
-	
+
 	public void sendProductRemovedEvent(Boolean result) {
 		for (ProductEvent listener : this.productEventListeners) {
 			listener.productRemovedEvent(result);
 		}
 	}
-	
-	
-	public void addProduct(String name,ArrayList<Component> components) {
-		Product p=new Product(id,name,components);
-		currentProducts.put(id,p);
+
+	public void addProduct(String name, List<Component> components) {
+		Product p = new Product(id, name, components);
+		currentProducts.put(id, p);
 		//
 		id++;
 		this.sendProductAddedEvent(true);
 	}
-	
-	public void modifyProduct(Long cid, String name,ArrayList<Component> components) {
-		Product p=new Product(cid,name,components);
-		currentProducts.put(cid,p);
+
+	public void modifyProduct(Long cid, String name, List<Component> components) {
+		Product p = new Product(cid, name, components);
+		currentProducts.put(cid, p);
 		//
 		this.sendProductModifiedEvent(true);
 	}
-	
+
 	public void removeProduct(Long id) {
 		currentProducts.remove(id);
 		this.sendProductRemovedEvent(true);
 	}
-	
-	public void changeProductName(Long cid,String name) {
+
+	public void changeProductName(Long cid, String name) {
 		currentProducts.get(cid).setName(name);
 		this.sendProductModifiedEvent(true);
 	}
-	
-	public void addComponentToProduct(Long cid,ArrayList<Component> components) {
-		for(Component c: components) {
+
+	public void addComponentToProduct(Long cid, List<Component> components) {
+		for (Component c : components) {
 			currentProducts.get(cid).getComponents().add(c);
 		}
 		this.sendProductModifiedEvent(true);
 	}
-	
-	public void removeComponentFromProduct(Long cid,ArrayList<Component> components) {
-		for(Component c: components) {
+
+	public void removeComponentFromProduct(Long cid, List<Component> components) {
+		for (Component c : components) {
 			currentProducts.get(cid).getComponents().remove(c);
 		}
 		this.sendProductModifiedEvent(true);

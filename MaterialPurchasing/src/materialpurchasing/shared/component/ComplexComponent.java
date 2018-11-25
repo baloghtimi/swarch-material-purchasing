@@ -2,6 +2,7 @@ package materialpurchasing.shared.component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ComplexComponent extends Component implements Serializable {
 
@@ -9,7 +10,7 @@ public class ComplexComponent extends Component implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8725499295912208803L;
-	private ArrayList<Component> components;
+	private List<Component> components;
 	
 	protected ComplexComponent() {
 		
@@ -20,11 +21,11 @@ public class ComplexComponent extends Component implements Serializable {
 		this.components = new ArrayList<Component>();
 	}
 
-	public ArrayList<Component> getComponents() {
+	public List<Component> getComponents() {
 		return components;
 	}
 
-	public void setComponents(ArrayList<Component> components) {
+	public void setComponents(List<Component> components) {
 		this.components = components;
 	}
 	

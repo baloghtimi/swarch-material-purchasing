@@ -105,8 +105,7 @@ public class LoginPage implements IsWidget, LoginEvent {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (password.getCurrentValue().equals(passwordAgain.getCurrentValue())) {
-					LoginController.getInstance().register(username.getCurrentValue(), password.getCurrentValue());
-					LoginController.getInstance().setUserStatus(userType.getCurrentValue());
+					LoginController.getInstance().register(username.getCurrentValue(), password.getCurrentValue(), userType.getCurrentValue());
 				} else {
 					showDialog("The two passwords are not the same.");
 				}

@@ -38,10 +38,8 @@ public class ComplexComponentController {
 		this.complexComponentEventListeners.remove(listener);
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ArrayList<ComplexComponent> getCurrentComplexComponents(){
-		
-		return (ArrayList)currentCC.values();
+		return new ArrayList<>(currentCC.values());
 	}
 	
 	public void sendComplexComponentAddedEvent(Boolean result) {
@@ -62,8 +60,7 @@ public class ComplexComponentController {
 		}
 	}
 	
-	
-	public void addComplexComponent(String name,ArrayList<Component> components) {
+	public void addComplexComponent(String name, List<Component> components) {
 		ComplexComponent cc=new ComplexComponent(id,name);
 		cc.setComponents(components);
 		currentCC.put(id,cc);
@@ -72,7 +69,7 @@ public class ComplexComponentController {
 		this.sendComplexComponentAddedEvent(true);
 	}
 	
-	public void modifyComplexComponent(Long cid, String name,ArrayList<Component> components) {
+	public void modifyComplexComponent(Long cid, String name, List<Component> components) {
 		ComplexComponent cc=new ComplexComponent(cid,name);
 		cc.setComponents(components);
 		currentCC.put(cid,cc);
@@ -85,19 +82,19 @@ public class ComplexComponentController {
 		this.sendComplexComponentRemovedEvent(true);
 	}
 	
-	public void changeComplexComponentName(Long cid,String name) {
+	public void changeComplexComponentName(Long cid, String name) {
 		currentCC.get(cid).setName(name);
 		this.sendComplexComponentModifiedEvent(true);
 	}
 	
-	public void addComponentToCC(Long cid,ArrayList<Component> components) {
+	public void addComponentToCC(Long cid, List<Component> components) {
 		for(Component c: components) {
 			currentCC.get(cid).getComponents().add(c);
 		}
 		this.sendComplexComponentModifiedEvent(true);
 	}
 	
-	public void removeComponentFromCC(Long cid,ArrayList<Component> components) {
+	public void removeComponentFromCC(Long cid, List<Component> components) {
 		for(Component c: components) {
 			currentCC.get(cid).getComponents().remove(c);
 		}

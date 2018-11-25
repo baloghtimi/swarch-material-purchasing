@@ -1,9 +1,13 @@
 package materialpurchasing.client.UI;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -30,9 +34,14 @@ import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
+import materialpurchasing.client.UI.util.ShoppingListItem;
 import materialpurchasing.client.controllers.BaseComponentController;
+import materialpurchasing.client.controllers.ProductionPlanController;
 import materialpurchasing.client.events.BaseComponentEvent;
 import materialpurchasing.shared.component.BaseComponent;
+import materialpurchasing.shared.component.ComplexComponent;
+import materialpurchasing.shared.component.Component;
+import materialpurchasing.shared.product.ProductionPlan;
 
 public class BuyerPage implements IsWidget, BaseComponentEvent {
 
@@ -50,11 +59,11 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 	@Override
 	public Widget asWidget() {
 		VBoxLayoutContainer container = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
-		
+
 		BoxLayoutData userBox = new BoxLayoutData(new Margins(10, 10, 5, 10));
 		UserPanel userPanel = new UserPanel(user);
 		container.add(userPanel, userBox);
-		
+
 		BoxLayoutData tabBox = new BoxLayoutData(new Margins(5, 10, 10, 10));
 		tabBox.setFlex(1);
 		TabPanel tabPanel = new TabPanel();
@@ -92,11 +101,13 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 		components = BaseComponentController.getInstance().getCurrentBaseComponents();
 		listStore.addAll(components);
 
-		ColumnConfig<BaseComponent, String> nameColumn = new ColumnConfig<BaseComponent, String>(gridProperties.name(), 200, "Name");
-		ColumnConfig<BaseComponent, Integer> priceColumn = new ColumnConfig<BaseComponent, Integer>(gridProperties.price(), 200, "Price");
+		ColumnConfig<BaseComponent, String> nameColumn = new ColumnConfig<BaseComponent, String>(gridProperties.name(),
+				200, "Name");
+		ColumnConfig<BaseComponent, Integer> priceColumn = new ColumnConfig<BaseComponent, Integer>(
+				gridProperties.price(), 200, "Price");
 		ColumnConfig<BaseComponent, Integer> purchaseTimeColumn = new ColumnConfig<BaseComponent, Integer>(
 				gridProperties.purchaseTime(), 200, "Purchase time");
-		
+
 		List<ColumnConfig<BaseComponent, ?>> columns = new ArrayList<ColumnConfig<BaseComponent, ?>>();
 		columns.add(nameColumn);
 		columns.add(priceColumn);
@@ -167,7 +178,7 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 			public void onSelect(SelectEvent event) {
 				VBoxLayoutContainer container = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCHMAX);
 				BoxLayoutData boxLayoutData = new BoxLayoutData(new Margins(5, 5, 5, 5));
-				
+
 				final TextField nameField = new TextField();
 				nameField.setAllowBlank(false);
 				container.add(new FieldLabel(nameField, "Name"), boxLayoutData);
@@ -285,9 +296,87 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 	}
 
 	private Widget createShoppingListTab() {
-		Widget widget = new Label("Shoppinglist");
-		return widget;
+		return new Label("Shopping list");
+//		ListStore<ShoppingListItem> listStore = new ListStore<ShoppingListItem>(shoppingListItemProperties.id());
+//		listStore.addAll(getShoppingList());
+//
+//		ColumnConfig<ShoppingListItem, BaseComponent> componentColumn = new ColumnConfig<ShoppingListItem, BaseComponent>(
+//				shoppingListItemProperties.component(), 200, "Component");
+//		ColumnConfig<ShoppingListItem, Integer> amountColumn = new ColumnConfig<ShoppingListItem, Integer>(
+//				shoppingListItemProperties.amount(), 200, "Amount");
+//		ColumnConfig<ShoppingListItem, Date> deadlineColumn = new ColumnConfig<ShoppingListItem, Date>(
+//				shoppingListItemProperties.deadLine(), 200, "Deadline");
+//
+//		List<ColumnConfig<ShoppingListItem, ?>> columns = new ArrayList<ColumnConfig<ShoppingListItem, ?>>();
+//		columns.add(componentColumn);
+//		columns.add(amountColumn);
+//		columns.add(deadlineColumn);
+//		ColumnModel<ShoppingListItem> columnModel = new ColumnModel<ShoppingListItem>(columns);
+//
+//		GridView<ShoppingListItem> gridView = new GridView<ShoppingListItem>();
+//		gridView.setAutoFill(true);
+//
+//		Grid<ShoppingListItem> shoppingListGrid = new Grid<ShoppingListItem>(listStore, columnModel, gridView);
+//		shoppingListGrid.setBorders(true);
+//
+//		return shoppingListGrid;
 	}
+
+//	private List<ShoppingListItem> getShoppingList() {
+//		List<ShoppingListItem> shoppingList = new ArrayList<>();
+//		Map<BaseComponent, ShoppingListItem> shoppingMap = new HashMap<>();
+//
+//		List<ProductionPlan> plans = ProductionPlanController.getInstance().getCurrentProductionPlans();
+//		for (ProductionPlan plan : plans) {
+//			for (BaseComponent component : getBaseComponents(plan)) {
+//				if(!shoppingMap.containsKey(component)) {
+//					shoppingMap.put(component, new ShoppingListItem(component, 0, new Date()));
+//				} else {
+//					Integer newAmount = shoppingMap.get(component).getAmount() + 1;
+//					Date newDeadline = plan.getDeadline().before(shoppingMap.get(component).getDeadLine()) ? plan.getDeadline() : shoppingMap.get(component).getDeadLine();
+//					shoppingMap.put(component, new ShoppingListItem(component, newAmount, newDeadline));
+//				}
+//			}
+//		}
+//
+//		return shoppingList;
+//	}
+
+//	private List<BaseComponent> getBaseComponents(ProductionPlan plan) {
+//		List<BaseComponent> components = new ArrayList<>();
+//		for (Component component : plan.getProduct().getComponents()) {
+//			if (component instanceof BaseComponent) {
+//				components.add((BaseComponent) component);
+//			} else {
+//				collectComponents(components, (ComplexComponent) component);
+//			}
+//		}
+//		return components;
+//	}
+
+//	private void collectComponents(List<BaseComponent> list, ComplexComponent complex) {
+//		for (Component component : complex.getComponents()) {
+//			if (component instanceof BaseComponent) {
+//				list.add((BaseComponent) component);
+//			} else {
+//				collectComponents(list, (ComplexComponent) component);
+//			}
+//		}
+//	}
+
+//	public interface ShoppingListItemProperties extends PropertyAccess<ShoppingListItem> {
+//		@SuppressWarnings("rawtypes")
+//		@Path("name")
+//		ModelKeyProvider id();
+//
+//		ValueProvider<ShoppingListItem, BaseComponent> component();
+//
+//		ValueProvider<ShoppingListItem, Integer> amount();
+//
+//		ValueProvider<ShoppingListItem, Date> deadLine();
+//	}
+//
+//	public static ShoppingListItemProperties shoppingListItemProperties = GWT.create(ShoppingListItemProperties.class);
 
 	@Override
 	public void baseComponentAdded(Boolean result) {

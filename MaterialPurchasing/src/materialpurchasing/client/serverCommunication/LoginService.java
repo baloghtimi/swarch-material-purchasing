@@ -14,7 +14,7 @@ public class LoginService {
 	private final CoreServiceAsync coreService = GWT.create(CoreService.class);
 
 	public LoginService() {
-		SendRegistration("Default", "default");
+		SendRegistration("Default", "default", UserType.BUYER);
 	}
 
 	public void SendLogin(String userID, String password) {
@@ -34,8 +34,8 @@ public class LoginService {
 		});
 	}
 
-	public void SendRegistration(String userID, String password) {
-		coreService.SendRegistrationToServer(userID, password, new AsyncCallback<Boolean>() {
+	public void SendRegistration(String userID, String password, UserType userType) {
+		coreService.SendRegistrationToServer(userID, password, userType, new AsyncCallback<Boolean>() {
 			public void onSuccess(Boolean result) {
 				if (result) {
 					LoginController.getInstance().sendRegistrationSuccessfulEvent();

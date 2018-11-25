@@ -1,11 +1,11 @@
 package materialpurchasing.shared.product;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 import materialpurchasing.shared.component.Component;
 
-public class Product implements Serializable {
+public class Product extends Component implements Serializable {
 	/**
 	 * 
 	 */
@@ -13,13 +13,13 @@ public class Product implements Serializable {
 	private Long id;
 	private String name;
 
-	private ArrayList<Component> components;
+	private List<Component> components;
 
 	protected Product() {
 
 	}
 
-	public Product(Long id, String name, ArrayList<Component> components) {
+	public Product(Long id, String name, List<Component> components) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -42,11 +42,11 @@ public class Product implements Serializable {
 		this.name = name;
 	}
 
-	public ArrayList<Component> getComponents() {
+	public List<Component> getComponents() {
 		return components;
 	}
 
-	public void setComponents(ArrayList<Component> components) {
+	public void setComponents(List<Component> components) {
 		this.components = components;
 	}
 

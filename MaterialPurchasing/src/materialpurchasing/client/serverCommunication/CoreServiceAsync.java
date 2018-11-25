@@ -16,7 +16,7 @@ public interface CoreServiceAsync {
 
 	void SendLoginToServer(String userID, String password, AsyncCallback<User> callback);
 
-	void SendRegistrationToServer(String userID, String password, AsyncCallback<Boolean> callback);
+	void SendRegistrationToServer(String userID, String password, UserType userType, AsyncCallback<Boolean> callback);
 
 	void SendUserStatusUpdateToServer(User currentUser, UserType ut, AsyncCallback<Boolean> callback);
 

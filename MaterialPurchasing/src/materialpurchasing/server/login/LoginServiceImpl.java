@@ -19,12 +19,12 @@ public class LoginServiceImpl {
 		return null;
 	}
 
-	public Boolean SendRegistrationToServer(String userID, String password) {
+	public Boolean SendRegistrationToServer(String userID, String password, UserType userType) {
 		if (userID_PW.containsKey(userID)) {
 			return false;
 		} else {
 			userID_PW.put(userID, password);
-			users.put(userID, new User());
+			users.put(userID, new User(userID, userType));
 			return true;
 		}
 	}

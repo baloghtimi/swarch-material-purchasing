@@ -24,8 +24,8 @@ public class CoreServiceImpl extends RemoteServiceServlet implements CoreService
 	}
 
 	@Override
-	public Boolean SendRegistrationToServer(String userID, String password) {
-		return loginServiceImpl.SendRegistrationToServer(userID, password);
+	public Boolean SendRegistrationToServer(String userID, String password, UserType userType) {
+		return loginServiceImpl.SendRegistrationToServer(userID, password, userType);
 	}
 
 	@Override
