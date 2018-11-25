@@ -5,25 +5,31 @@ import java.util.HashMap;
 import materialpurchasing.shared.product.Product;
 
 public class ProductServiceImpl {
+	
+	HashMap<Long, Product> serverProducts;
+	
+	public ProductServiceImpl() {
+		serverProducts=new HashMap<Long, Product>();
+	}
 
 	public HashMap<Long, Product> getProducts() {
 		// TODO Auto-generated method stub
-		return new HashMap<Long, Product>();
+		return serverProducts;
 	}
 
 	public boolean addProducts(Product product) {
-		// TODO Auto-generated method stub
-		return false;
+		serverProducts.put(product.getId(), product);
+		return true;
 	}
 
 	public boolean modifyProducts(Product product) {
-		// TODO Auto-generated method stub
-		return false;
+		serverProducts.put(product.getId(), product);
+		return true;
 	}
 
 	public boolean removeProducts(Long id) {
-		// TODO Auto-generated method stub
-		return false;
+		serverProducts.remove(id);
+		return true;
 	}
 
 	public boolean sendProducts(HashMap<Long, Product> currentProduct) {

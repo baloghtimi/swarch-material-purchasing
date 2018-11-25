@@ -6,22 +6,31 @@ import materialpurchasing.shared.component.BaseComponent;
 
 public class BaseComponentServiceImpl {
 
+	private HashMap<Long, BaseComponent> serverBC;
+
+	public BaseComponentServiceImpl() {
+
+		serverBC = new HashMap<Long, BaseComponent>();
+	}
+
 	public HashMap<Long, BaseComponent> getBaseComponents() {
-		// TODO Auto-generated method stub
-		return new HashMap<Long, BaseComponent>();
+		return serverBC;
 	}
 
 	public boolean addBaseComponents(BaseComponent baseComponent) {
+		serverBC.put(baseComponent.getId(), baseComponent);
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean modifyBaseComponents(BaseComponent baseComponent) {
+		serverBC.put(baseComponent.getId(), baseComponent);
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean removeBaseComponents(Long id) {
+		serverBC.remove(id);
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -30,5 +39,4 @@ public class BaseComponentServiceImpl {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }
