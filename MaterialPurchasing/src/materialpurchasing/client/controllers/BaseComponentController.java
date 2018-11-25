@@ -10,26 +10,26 @@ import materialpurchasing.shared.component.BaseComponent;
 
 public class BaseComponentController {
 
-	BaseComponentService bcs= new BaseComponentService();
-	
-	Long id=Long.MIN_VALUE;
-	
-	HashMap<Long,BaseComponent> currentBC=new HashMap<Long,BaseComponent>();
-	
+	BaseComponentService bcs = new BaseComponentService();
+
+	Long id = Long.MIN_VALUE;
+
+	HashMap<Long, BaseComponent> currentBC = new HashMap<Long, BaseComponent>();
+
 	// Singelton Design Pattern
 	private static BaseComponentController instance = null;
-	
+
 	protected BaseComponentController() {
-		
+
 	}
-	
+
 	public static BaseComponentController getInstance() {
 		if (instance == null) {
 			instance = new BaseComponentController();
 		}
 		return instance;
 	}
-	
+
 	// Observer Design Pattern
 	private List<BaseComponentEvent> baseComponentEventListeners = new ArrayList<BaseComponentEvent>();
 
@@ -46,44 +46,44 @@ public class BaseComponentController {
 			listener.baseComponentAdded(result);
 		}
 	}
-	
+
 	public void sendBaseComponentModifiedEvent(Boolean result) {
 		for (BaseComponentEvent listener : this.baseComponentEventListeners) {
 			listener.baseComponentModified(result);
 		}
 	}
-	
+
 	public void sendBaseComponentRemovedEvent(Boolean result) {
 		for (BaseComponentEvent listener : this.baseComponentEventListeners) {
 			listener.baseComponentRemoved(result);
 		}
 	}
-	
-	
-	public void addBaseComponent(String name,Integer price,Integer acquireTime) {
-		currentBC.put(id,new BaseComponent(id,name,price,acquireTime));
-		bcs.addBaseComponent(new BaseComponent(id,name,price,acquireTime));
+
+	public void addBaseComponent(String name, Integer price, Integer acquireTime) {
+		currentBC.put(id, new BaseComponent(id, name, price, acquireTime));
+		bcs.addBaseComponent(new BaseComponent(id, name, price, acquireTime));
 		//
 		id++;
 		this.sendBaseComponentAddedEvent(true);
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ArrayList<BaseComponent> getCurrentBaseComponents(){
-		
-		return (ArrayList)currentBC.values();
+
+	public ArrayList<BaseComponent> getCurrentBaseComponents() {
+		return new ArrayList<>(currentBC.values());
 	}
-	
-	public void modifyBaseComponent(Long cid, String name,Integer price,Integer acquireTime) {
-		currentBC.put(cid,new BaseComponent(cid,name,price,acquireTime));
-		bcs.addBaseComponent(new BaseComponent(cid,name,price,acquireTime));
+
+	public void modifyBaseComponent(Long cid, String name, Integer price, Integer acquireTime) {
+		currentBC.put(cid, new BaseComponent(cid, name, price, acquireTime));
+		bcs.addBaseComponent(new BaseComponent(cid, name, price, acquireTime));
 		//
 		this.sendBaseComponentModifiedEvent(true);
 	}
-	
+
 	public void removeBaseComponent(Long id) {
-		currentBC.remove(id);
-		this.sendBaseComponentRemovedEvent(true);
+		if (!currentBC.remove(id).equals(null)) {
+			this.sendBaseComponentRemovedEvent(true);
+		} else {
+			this.sendBaseComponentRemovedEvent(false);
+		}
 	}
-	
+
 }

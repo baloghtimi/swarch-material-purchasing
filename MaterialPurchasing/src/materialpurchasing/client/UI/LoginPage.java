@@ -10,9 +10,13 @@ import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutData;
+import com.sencha.gxt.widget.core.client.container.BoxLayoutContainer.BoxLayoutPack;
+import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer.HBoxLayoutAlign;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayoutAlign;
+import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
@@ -21,11 +25,8 @@ import com.sencha.gxt.widget.core.client.form.TextField;
 
 import materialpurchasing.client.controllers.LoginController;
 import materialpurchasing.client.events.LoginEvent;
-import materialpurchasing.shared.user.User;
 
 public class LoginPage implements IsWidget, LoginEvent {
-
-	private VBoxLayoutContainer widget;
 
 	public LoginPage() {
 		LoginController.getInstance().addObserver(this);
@@ -33,17 +34,16 @@ public class LoginPage implements IsWidget, LoginEvent {
 
 	@Override
 	public Widget asWidget() {
-		if (widget == null) {
-			BoxLayoutData login = new BoxLayoutData(new Margins(0, 0, 20, 0));
-			login.setFlex(1);
-		    BoxLayoutData registration = new BoxLayoutData(new Margins(10, 0, 0, 0));
-			
-			widget = new VBoxLayoutContainer(VBoxLayoutAlign.CENTER);
-			widget.add(createLoginForm(), login);
-			widget.add(createRegistrationForm(), registration);
-		}
+		HBoxLayoutContainer container = new HBoxLayoutContainer(HBoxLayoutAlign.MIDDLE);
+		container.setPack(BoxLayoutPack.CENTER);
 
-		return widget;
+		BoxLayoutData login = new BoxLayoutData(new Margins(0, 10, 0, 0));
+		BoxLayoutData registration = new BoxLayoutData(new Margins(0, 0, 0, 10));
+
+		container.add(createLoginForm(), login);
+		container.add(createRegistrationForm(), registration);
+
+		return container;
 	}
 
 	/*
@@ -108,7 +108,7 @@ public class LoginPage implements IsWidget, LoginEvent {
 		TextButton registrate = new TextButton("Registrate", selectHandler);
 
 		FramedPanel panel = new FramedPanel();
-		panel.setHeadingText("Login");
+		panel.setHeadingText("Registration");
 		panel.add(vlc, new MarginData(15));
 		panel.addButton(registrate);
 
@@ -117,9 +117,23 @@ public class LoginPage implements IsWidget, LoginEvent {
 
 	@Override
 	public void loginSuccessful() {
-		//LoginController.getInstance().getUserType();
-		BuyerPage buyerPage = new BuyerPage();
-		RootPanel.get().add(buyerPage.asWidget());
+		RootPanel.get().clear();
+		Viewport viewport = new Viewport();
+		switch (LoginController.getInstance().getUserType()) {
+		case MANAGER:
+			ManagerPage managerPage = new ManagerPage(LoginController.getInstance().getUserId());
+			viewport.setWidget(managerPage);
+			break;
+		case PRODUCER:
+			ProducerPage producerPage = new ProducerPage(LoginController.getInstance().getUserId());
+			viewport.setWidget(producerPage);
+			break;
+		case BUYER:
+			BuyerPage buyerPage = new BuyerPage(LoginController.getInstance().getUserId());
+			viewport.setWidget(buyerPage);
+		}
+		;
+		RootPanel.get().add(viewport);
 	}
 
 	@Override
@@ -136,7 +150,7 @@ public class LoginPage implements IsWidget, LoginEvent {
 	public void registrationFailed() {
 		showDialog("Registration failed.");
 	}
-	
+
 	private void showDialog(String label) {
 		Dialog dialog = new Dialog();
 		dialog.setPredefinedButtons(PredefinedButton.OK);
@@ -149,7 +163,7 @@ public class LoginPage implements IsWidget, LoginEvent {
 	@Override
 	public void logOut() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

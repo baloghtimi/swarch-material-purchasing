@@ -2,6 +2,7 @@ package materialpurchasing.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.sencha.gxt.widget.core.client.container.Viewport;
 
 import materialpurchasing.client.UI.LoginPage;
 
@@ -14,6 +15,10 @@ public class MaterialPurchasing implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		LoginPage loginPage = new LoginPage();
-		RootPanel.get().add(loginPage.asWidget());
+		
+		Viewport viewport = new Viewport();
+		viewport.setWidget(loginPage);
+		
+		RootPanel.get().add(viewport);
 	}
 }
