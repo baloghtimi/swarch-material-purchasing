@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import materialpurchasing.client.events.ProductionPlanEvent;
+import materialpurchasing.client.serverCommunication.ProductionPlanService;
 import materialpurchasing.shared.product.Product;
 import materialpurchasing.shared.product.ProductionPlan;
 
@@ -17,8 +18,10 @@ public class ProductionPlanController {
 	// Singelton Design Pattern
 	private static ProductionPlanController instance = null;
 
+	ProductionPlanService pps=new ProductionPlanService();
+	
 	protected ProductionPlanController() {
-		
+		pps.getProductionPlans();
 	}
 
 	public static ProductionPlanController getInstance() {
@@ -65,6 +68,7 @@ public class ProductionPlanController {
 		public void addProductionPlan(Product product, Integer amount, Date deadline) {
 			ProductionPlan p=new ProductionPlan(id,product,amount,deadline);
 			currentProductionPlans.put(id,p);
+			pps.addProductionPlan(p);
 			//
 			id++;
 			this.sendProductionPlanAddedEvent(true);
@@ -73,12 +77,20 @@ public class ProductionPlanController {
 		public void modifyProductionPlan(Long cid, Product product, Integer amount, Date deadline) {
 			ProductionPlan p=new ProductionPlan(cid,product,amount,deadline);
 			currentProductionPlans.put(cid,p);
+			pps.modifyComponent(p);
 			//
 			this.sendProductionPlanModifiedEvent(true);
 		}
 		
 		public void removeProductionPlan(Long id) {
 			currentProductionPlans.remove(id);
+			pps.removeComponent(id);
 			this.sendProductionPlanRemovedEvent(true);
 		}
+
+		public void setCurrentProductionPlans(HashMap<Long, ProductionPlan> currentProductionPlans) {
+			this.currentProductionPlans = currentProductionPlans;
+		}
+		
+		
 }

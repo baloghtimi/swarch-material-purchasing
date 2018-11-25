@@ -20,7 +20,7 @@ public class BaseComponentController {
 	private static BaseComponentController instance = null;
 
 	protected BaseComponentController() {
-
+		bcs.getBaseComponents();
 	}
 
 	public static BaseComponentController getInstance() {
@@ -73,17 +73,26 @@ public class BaseComponentController {
 
 	public void modifyBaseComponent(Long cid, String name, Integer price, Integer acquireTime) {
 		currentBC.put(cid, new BaseComponent(cid, name, price, acquireTime));
-		bcs.addBaseComponent(new BaseComponent(cid, name, price, acquireTime));
+		bcs.modifyComponent(new BaseComponent(cid, name, price, acquireTime));
 		//
 		this.sendBaseComponentModifiedEvent(true);
 	}
 
 	public void removeBaseComponent(Long id) {
 		if (!currentBC.remove(id).equals(null)) {
+			bcs.removeComponent(id);
 			this.sendBaseComponentRemovedEvent(true);
 		} else {
 			this.sendBaseComponentRemovedEvent(false);
 		}
 	}
 
+	public HashMap<Long, BaseComponent> getCurrentBC() {
+		return currentBC;
+	}
+
+	public void setCurrentBC(HashMap<Long, BaseComponent> currentBC) {
+		this.currentBC = currentBC;
+	}
+	
 }

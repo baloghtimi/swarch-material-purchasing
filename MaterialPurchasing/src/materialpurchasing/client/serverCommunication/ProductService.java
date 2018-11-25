@@ -1,24 +1,23 @@
 package materialpurchasing.client.serverCommunication;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import materialpurchasing.client.controllers.BaseComponentController;
-import materialpurchasing.shared.component.BaseComponent;
+import materialpurchasing.client.controllers.ProductController;
+import materialpurchasing.shared.product.Product;
 
-public class BaseComponentService {
+public class ProductService {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
 	private final CoreServiceAsync coreService = GWT.create(CoreService.class);
 
-	public void getBaseComponents() {
-		coreService.getBaseComponents(new AsyncCallback<HashMap<Long, BaseComponent>>() {
-			public void onSuccess(HashMap<Long, BaseComponent> result) {
-				BaseComponentController.getInstance().setCurrentBC(result);
+	public void getProducts() {
+		coreService.getProducts(new AsyncCallback<HashMap<Long, Product>>() {
+			public void onSuccess(HashMap<Long, Product> result) {
+				ProductController.getInstance().setCurrentProducts(result);
 			}
 
 			public void onFailure(Throwable caught) {
@@ -26,22 +25,8 @@ public class BaseComponentService {
 		});
 	}
 
-	public void addBaseComponent(BaseComponent baseComponent) {
-		coreService.addBaseComponents(baseComponent, new AsyncCallback<Boolean>() {
-			public void onFailure(Throwable caught) {
-			}
-
-			@Override
-			public void onSuccess(Boolean result) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-	}
-
-	public void modifyComponent(BaseComponent baseComponent) {
-		coreService.modifyBaseComponents(baseComponent, new AsyncCallback<Boolean>() {
+	public void addProduct(Product product) {
+		coreService.addProducts(product, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
 			}
 
@@ -54,8 +39,22 @@ public class BaseComponentService {
 
 	}
 
-	public void removeComponent(Long id) {
-		coreService.removeBaseComponents(id, new AsyncCallback<Boolean>() {
+	public void modifyProduct(Product product) {
+		coreService.modifyProducts(product, new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+	}
+
+	public void removeProduct(Long id) {
+		coreService.removeProducts(id, new AsyncCallback<Boolean>() {
 			public void onSuccess(Boolean result) {
 
 			}
@@ -66,8 +65,8 @@ public class BaseComponentService {
 
 	}
 
-	public void SendBaseComponents(HashMap<Long, BaseComponent> currentBC) {
-		coreService.sendBaseComponents(currentBC, new AsyncCallback<Boolean>() {
+	public void SendProducts(HashMap<Long, Product> currentProduct) {
+		coreService.sendProducts(currentProduct, new AsyncCallback<Boolean>() {
 			public void onSuccess(Boolean result) {
 
 			}
