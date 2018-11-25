@@ -59,7 +59,7 @@ public class ProductionPlanController {
 		
 
 		public List<ProductionPlan> getCurrentProductionPlans() {
-			return (ArrayList)currentProductionPlans.values();
+			return new ArrayList<>(currentProductionPlans.values());
 		}
 
 		public void addProductionPlan(Product product, Integer amount, Date deadline) {

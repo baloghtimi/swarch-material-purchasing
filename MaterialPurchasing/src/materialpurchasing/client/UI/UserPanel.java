@@ -18,14 +18,14 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import materialpurchasing.client.UI.image.ImageResources;
 import materialpurchasing.client.controllers.LoginController;
-import materialpurchasing.client.events.LoginEvent;
 import materialpurchasing.client.events.LogoutEvent;
 
-public class UserPanel extends Component implements IsWidget, LoginEvent,LogoutEvent {
+public class UserPanel extends Component implements IsWidget, LogoutEvent {
 	
 	private String user;
 	
 	public UserPanel(String user) {
+		LoginController.getInstance().addObserver(this);
 		this.user = user;
 	}
 
@@ -56,30 +56,6 @@ public class UserPanel extends Component implements IsWidget, LoginEvent,LogoutE
 		container.add(logout, boxLayoutData);
 		
 		return container;
-	}
-
-	@Override
-	public void loginSuccessful() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void loginFailed() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registrationSuccessful() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registrationFailed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

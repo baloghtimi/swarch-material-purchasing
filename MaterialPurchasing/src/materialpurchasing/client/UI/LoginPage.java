@@ -5,6 +5,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.FramedPanel;
@@ -19,12 +22,14 @@ import com.sencha.gxt.widget.core.client.container.VBoxLayoutContainer.VBoxLayou
 import com.sencha.gxt.widget.core.client.container.Viewport;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.PasswordField;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import materialpurchasing.client.controllers.LoginController;
 import materialpurchasing.client.events.LoginEvent;
+import materialpurchasing.shared.user.UserType;
 
 public class LoginPage implements IsWidget, LoginEvent {
 
@@ -88,17 +93,20 @@ public class LoginPage implements IsWidget, LoginEvent {
 
 		final PasswordField password = new PasswordField();
 		final PasswordField passwordAgain = new PasswordField();
+		final ComboBox<UserType> userType = createUserTypeComboBox();
 
 		VBoxLayoutContainer vlc = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCH);
 		vlc.add(new FieldLabel(username, "Username"));
 		vlc.add(new FieldLabel(password, "Password"));
 		vlc.add(new FieldLabel(passwordAgain, "Password again"));
+		vlc.add(new FieldLabel(userType, "Role"));
 
 		SelectHandler selectHandler = new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (password.getCurrentValue().equals(passwordAgain.getCurrentValue())) {
 					LoginController.getInstance().register(username.getCurrentValue(), password.getCurrentValue());
+					LoginController.getInstance().setUserStatus(userType.getCurrentValue());
 				} else {
 					showDialog("The two passwords are not the same.");
 				}
@@ -113,6 +121,37 @@ public class LoginPage implements IsWidget, LoginEvent {
 		panel.addButton(registrate);
 
 		return panel;
+	}
+	
+	private ComboBox<UserType> createUserTypeComboBox() {
+		ListStore<UserType> store = new ListStore<UserType>(new ModelKeyProvider<UserType>() {
+			@Override
+			public String getKey(UserType item) {
+				return item.toString();
+			}
+		});
+		store.add(UserType.MANAGER);
+		store.add(UserType.PRODUCER);
+		store.add(UserType.BUYER);
+
+		LabelProvider<UserType> labelProvider = new LabelProvider<UserType>() {
+			@Override
+			public String getLabel(UserType item) {
+				switch(item) {
+				case MANAGER:
+					return "Manager";
+				case PRODUCER:
+					return "Producer";
+				case BUYER:
+					return "Buyer";
+				default:
+					return "";
+				}
+			}
+		};
+
+		ComboBox<UserType> combo = new ComboBox<UserType>(store, labelProvider);
+		return combo;
 	}
 
 	@Override

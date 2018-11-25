@@ -27,7 +27,6 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerField;
-import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
@@ -35,10 +34,11 @@ import com.sencha.gxt.widget.core.client.grid.GridView;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
-import materialpurchasing.client.controllers.BaseComponentController;
 import materialpurchasing.client.controllers.ProductController;
 import materialpurchasing.client.controllers.ProductionPlanController;
 import materialpurchasing.client.events.ProductionPlanEvent;
+import materialpurchasing.shared.component.BaseComponent;
+import materialpurchasing.shared.component.Component;
 import materialpurchasing.shared.product.Product;
 import materialpurchasing.shared.product.ProductionPlan;
 
@@ -89,7 +89,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 		container.add(grid, gridBox);
 
 		FramedPanel panel = new FramedPanel();
-		panel.setHeadingText("ProductionPlanion plans");
+		panel.setHeadingText("Production plans");
 		panel.add(container);
 		panel.setBorders(true);
 		return panel;
@@ -100,15 +100,15 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 		ProductionPlans = ProductionPlanController.getInstance().getCurrentProductionPlans();
 		listStore.addAll(ProductionPlans);
 
-		ColumnConfig<ProductionPlan, String> nameColumn = new ColumnConfig<ProductionPlan, String>(
-				gridProperties.name(), 200, "Name");
+		ColumnConfig<ProductionPlan, Product> productColumn = new ColumnConfig<ProductionPlan, Product>(
+				gridProperties.product(), 200, "Product");
 		ColumnConfig<ProductionPlan, Integer> amountColumn = new ColumnConfig<ProductionPlan, Integer>(
 				gridProperties.amount(), 200, "Amount");
 		ColumnConfig<ProductionPlan, Date> deadlineColumn = new ColumnConfig<ProductionPlan, Date>(
 				gridProperties.deadline(), 200, "Deadline");
 
 		List<ColumnConfig<ProductionPlan, ?>> columns = new ArrayList<ColumnConfig<ProductionPlan, ?>>();
-		columns.add(nameColumn);
+		columns.add(productColumn);
 		columns.add(amountColumn);
 		columns.add(deadlineColumn);
 		ColumnModel<ProductionPlan> columnModel = new ColumnModel<ProductionPlan>(columns);
@@ -133,7 +133,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 	public interface GridProperties extends PropertyAccess<ProductionPlan> {
 		ModelKeyProvider<ProductionPlan> id();
 
-		ValueProvider<ProductionPlan, String> name();
+		ValueProvider<ProductionPlan, Product> product();
 
 		ValueProvider<ProductionPlan, Integer> amount();
 
@@ -177,7 +177,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 			public void onSelect(SelectEvent event) {
 				VBoxLayoutContainer container = new VBoxLayoutContainer(VBoxLayoutAlign.STRETCHMAX);
 				BoxLayoutData boxLayoutData = new BoxLayoutData(new Margins(5, 5, 5, 5));
-
+				
 				final ComboBox<Product> products = createProductComboBox();
 				products.setAllowBlank(false);
 				container.add(new FieldLabel(products, "Product"), boxLayoutData);
@@ -204,7 +204,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (products.isValid() && amountField.isValid() && deadlineField.getValue() != null) {
-							ProductionPlanController.getInstance().addBaseComponent(products.getCurrentValue(),
+							ProductionPlanController.getInstance().addProductionPlan(products.getCurrentValue(),
 									amountField.getCurrentValue(), deadlineField.getValue());
 							dialog.hide();
 						}
@@ -224,7 +224,15 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 				return item.getId().toString();
 			}
 		});
-		store.replaceAll(ProductController.getInstance().getCurrentProducts());
+		List<Product> products = new ArrayList<>();
+		products = ProductController.getInstance().getCurrentProducts();
+		if (products.isEmpty()) {
+			ArrayList<Component> components = new ArrayList<>();
+			components.add(new BaseComponent(1L, "Component1", 1, 1));
+			products = new ArrayList<>();
+			products.add(new Product(1L, "Product1", components));
+		}
+		store.replaceAll(products);
 
 		LabelProvider<Product> labelProvider = new LabelProvider<Product>() {
 			@Override
@@ -237,6 +245,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 		};
 
 		ComboBox<Product> combo = new ComboBox<Product>(store, labelProvider);
+		return combo;
 	}
 
 	private SelectHandler createModifySelectionHandler() {
@@ -275,7 +284,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (products.isValid() && amountField.isValid() && deadlineField.getValue() != null) {
-							ProductionPlanController.getInstance().modifyProductPlan(currentProductionPlan.getId(),
+							ProductionPlanController.getInstance().modifyProductionPlan(currentProductionPlan.getId(),
 									products.getCurrentValue(), amountField.getCurrentValue(),
 									deadlineField.getValue());
 							dialog.hide();
@@ -305,7 +314,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 				dialog.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
 					@Override
 					public void onSelect(SelectEvent event) {
-						ProductionPlanController.getInstance().removeBaseComponent(currentProductionPlan.getId());
+						ProductionPlanController.getInstance().removeProductionPlan(currentProductionPlan.getId());
 						dialog.hide();
 					}
 				});
@@ -331,5 +340,32 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 		dialog.setResizable(false);
 		dialog.add(new Label(label));
 		dialog.show();
+	}
+
+	@Override
+	public void productionPlanAddedEvent(Boolean result) {
+		if (result) {
+			showDialog("Product added successfully.");
+		} else {
+			showDialog("Failed to add product.");
+		}
+	}
+
+	@Override
+	public void productionPlanModifiedEvent(Boolean result) {
+		if (result) {
+			showDialog("Product modified successfully.");
+		} else {
+			showDialog("Failed to modify product.");
+		}
+	}
+
+	@Override
+	public void productionPlanRemovedEvent(Boolean result) {
+		if (result) {
+			showDialog("Product removed successfully.");
+		} else {
+			showDialog("Failed to remove product.");
+		}
 	}
 }

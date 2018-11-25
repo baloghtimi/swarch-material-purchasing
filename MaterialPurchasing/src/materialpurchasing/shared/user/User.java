@@ -14,7 +14,7 @@ public class User implements Serializable{
 	UserType userType;
 	
 	public User(){
-		this("Default",UserType.BUYER);
+		this("Default",UserType.MANAGER);
 	}
 	
 	public User(String name, UserType userType){

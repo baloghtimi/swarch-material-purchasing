@@ -50,4 +50,8 @@ public class Product implements Serializable {
 		this.components = components;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }

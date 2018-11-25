@@ -38,10 +38,8 @@ public class ProductController {
 		this.productEventListeners.remove(listener);
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ArrayList<Product> getCurrentProducts(){
-		
-		return (ArrayList)currentProducts.values();
+		return new ArrayList<>(currentProducts.values());
 	}
 	
 	public void sendProductAddedEvent(Boolean result) {
