@@ -1,9 +1,15 @@
 package materialpurchasing.shared.product;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ProductionPlan {
+public class ProductionPlan implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4099377511417046849L;
+
 	private Long id=Long.MIN_VALUE;
 	
 	private Product product;

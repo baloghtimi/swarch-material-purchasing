@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import materialpurchasing.client.events.ProductEvent;
+import materialpurchasing.client.serverCommunication.ProductService;
 import materialpurchasing.shared.component.Component;
 import materialpurchasing.shared.product.Product;
 
@@ -13,11 +14,13 @@ public class ProductController {
 
 	HashMap<Long, Product> currentProducts = new HashMap<Long, Product>();
 
+	ProductService ps = new ProductService();
+
 	// Singelton Design Pattern
 	private static ProductController instance = null;
 
 	protected ProductController() {
-
+		ps.getProducts();
 	}
 
 	public static ProductController getInstance() {
@@ -38,7 +41,7 @@ public class ProductController {
 		this.productEventListeners.remove(listener);
 	}
 
-	public List<Product> getCurrentProducts() {
+	public ArrayList<Product> getCurrentProducts() {
 		return new ArrayList<>(currentProducts.values());
 	}
 
@@ -60,42 +63,53 @@ public class ProductController {
 		}
 	}
 
-	public void addProduct(String name, List<Component> components) {
+	public void addProduct(String name, ArrayList<Component> components) {
 		Product p = new Product(id, name, components);
 		currentProducts.put(id, p);
+		ps.addProduct(p);
 		//
 		id++;
 		this.sendProductAddedEvent(true);
 	}
 
-	public void modifyProduct(Long cid, String name, List<Component> components) {
+	public void modifyProduct(Long cid, String name, ArrayList<Component> components) {
 		Product p = new Product(cid, name, components);
 		currentProducts.put(cid, p);
+		ps.modifyProduct(p);
 		//
 		this.sendProductModifiedEvent(true);
 	}
 
 	public void removeProduct(Long id) {
 		currentProducts.remove(id);
+		ps.removeProduct(id);
 		this.sendProductRemovedEvent(true);
 	}
 
 	public void changeProductName(Long cid, String name) {
 		currentProducts.get(cid).setName(name);
+		ps.modifyProduct(currentProducts.get(cid));
 		this.sendProductModifiedEvent(true);
 	}
 
-	public void addComponentToProduct(Long cid, List<Component> components) {
+	public void addComponentToProduct(Long cid, ArrayList<Component> components) {
 		for (Component c : components) {
 			currentProducts.get(cid).getComponents().add(c);
 		}
+		ps.modifyProduct(currentProducts.get(cid));
 		this.sendProductModifiedEvent(true);
 	}
 
-	public void removeComponentFromProduct(Long cid, List<Component> components) {
+	public void removeComponentFromProduct(Long cid, ArrayList<Component> components) {
 		for (Component c : components) {
 			currentProducts.get(cid).getComponents().remove(c);
 		}
+		ps.modifyProduct(currentProducts.get(cid));
 		this.sendProductModifiedEvent(true);
 	}
+
+	public void setCurrentProducts(HashMap<Long, Product> currentProducts) {
+		this.currentProducts = currentProducts;
+	}
+
 }

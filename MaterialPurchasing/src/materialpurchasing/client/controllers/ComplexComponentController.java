@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import materialpurchasing.client.events.ComplexComponentEvent;
+import materialpurchasing.client.serverCommunication.ComplexComponentService;
 import materialpurchasing.shared.component.ComplexComponent;
 import materialpurchasing.shared.component.Component;
 
@@ -12,12 +13,14 @@ public class ComplexComponentController {
 	Long id = Long.MIN_VALUE;
 
 	HashMap<Long, ComplexComponent> currentCC = new HashMap<Long, ComplexComponent>();
+	
+	ComplexComponentService ccs=new ComplexComponentService();
 
 	// Singelton Design Pattern
 	private static ComplexComponentController instance = null;
 
 	protected ComplexComponentController() {
-		
+		ccs.getComplexComponents();
 	}
 
 	public static ComplexComponentController getInstance() {
@@ -64,6 +67,7 @@ public class ComplexComponentController {
 		ComplexComponent cc=new ComplexComponent(id,name);
 		cc.setComponents(components);
 		currentCC.put(id,cc);
+		ccs.addComplexComponent(cc);
 		//
 		id++;
 		this.sendComplexComponentAddedEvent(true);
@@ -73,17 +77,20 @@ public class ComplexComponentController {
 		ComplexComponent cc=new ComplexComponent(cid,name);
 		cc.setComponents(components);
 		currentCC.put(cid,cc);
+		ccs.modifyComponent(cc);
 		//
 		this.sendComplexComponentModifiedEvent(true);
 	}
 	
 	public void removeComplexComponent(Long id) {
 		currentCC.remove(id);
+		ccs.removeComponent(id);
 		this.sendComplexComponentRemovedEvent(true);
 	}
 	
 	public void changeComplexComponentName(Long cid, String name) {
 		currentCC.get(cid).setName(name);
+		ccs.modifyComponent(currentCC.get(cid));
 		this.sendComplexComponentModifiedEvent(true);
 	}
 	
@@ -91,6 +98,7 @@ public class ComplexComponentController {
 		for(Component c: components) {
 			currentCC.get(cid).getComponents().add(c);
 		}
+		ccs.modifyComponent(currentCC.get(cid));
 		this.sendComplexComponentModifiedEvent(true);
 	}
 	
@@ -99,5 +107,11 @@ public class ComplexComponentController {
 			currentCC.get(cid).getComponents().remove(c);
 		}
 		this.sendComplexComponentModifiedEvent(true);
+		ccs.modifyComponent(currentCC.get(cid));
+	}
+
+	public void setCurrentBC(HashMap<Long, ComplexComponent> result) {
+		currentCC=result;
+		
 	}
 }

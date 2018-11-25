@@ -6,6 +6,10 @@ import materialpurchasing.shared.user.User;
 import materialpurchasing.shared.user.UserType;
 
 public class LoginServiceImpl {
+	
+	public LoginServiceImpl() {
+		
+	}
 
 	// UserID - pw
 	HashMap<String, String> userID_PW = new HashMap<String, String>();

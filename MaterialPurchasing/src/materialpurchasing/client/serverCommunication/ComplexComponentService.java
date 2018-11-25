@@ -1,24 +1,23 @@
 package materialpurchasing.client.serverCommunication;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import materialpurchasing.client.controllers.BaseComponentController;
-import materialpurchasing.shared.component.BaseComponent;
+import materialpurchasing.client.controllers.ComplexComponentController;
+import materialpurchasing.shared.component.ComplexComponent;
 
-public class BaseComponentService {
+public class ComplexComponentService {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
 	private final CoreServiceAsync coreService = GWT.create(CoreService.class);
 
-	public void getBaseComponents() {
-		coreService.getBaseComponents(new AsyncCallback<HashMap<Long, BaseComponent>>() {
-			public void onSuccess(HashMap<Long, BaseComponent> result) {
-				BaseComponentController.getInstance().setCurrentBC(result);
+	public void getComplexComponents() {
+		coreService.getComplexComponents(new AsyncCallback<HashMap<Long, ComplexComponent>>() {
+			public void onSuccess(HashMap<Long, ComplexComponent> result) {
+				ComplexComponentController.getInstance().setCurrentBC(result);
 			}
 
 			public void onFailure(Throwable caught) {
@@ -26,8 +25,8 @@ public class BaseComponentService {
 		});
 	}
 
-	public void addBaseComponent(BaseComponent baseComponent) {
-		coreService.addBaseComponents(baseComponent, new AsyncCallback<Boolean>() {
+	public void addComplexComponent(ComplexComponent complexComponent) {
+		coreService.addComplexComponents(complexComponent, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
 			}
 
@@ -40,8 +39,8 @@ public class BaseComponentService {
 
 	}
 
-	public void modifyComponent(BaseComponent baseComponent) {
-		coreService.modifyBaseComponents(baseComponent, new AsyncCallback<Boolean>() {
+	public void modifyComponent(ComplexComponent complexComponent) {
+		coreService.modifyComplexComponents(complexComponent, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable caught) {
 			}
 
@@ -55,7 +54,7 @@ public class BaseComponentService {
 	}
 
 	public void removeComponent(Long id) {
-		coreService.removeBaseComponents(id, new AsyncCallback<Boolean>() {
+		coreService.removeComplexComponents(id, new AsyncCallback<Boolean>() {
 			public void onSuccess(Boolean result) {
 
 			}
@@ -66,8 +65,8 @@ public class BaseComponentService {
 
 	}
 
-	public void SendBaseComponents(HashMap<Long, BaseComponent> currentBC) {
-		coreService.sendBaseComponents(currentBC, new AsyncCallback<Boolean>() {
+	public void SendComplexComponents(HashMap<Long, ComplexComponent> currentBC) {
+		coreService.sendComplexComponents(currentBC, new AsyncCallback<Boolean>() {
 			public void onSuccess(Boolean result) {
 
 			}
