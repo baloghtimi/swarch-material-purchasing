@@ -9,7 +9,5 @@ public abstract interface LoginEvent {
 	public abstract void registrationSuccessful();
 	
 	public abstract void registrationFailed();
-	
-	public abstract void logOut();
 
 }

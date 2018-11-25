@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import materialpurchasing.client.events.LoginEvent;
+import materialpurchasing.client.events.LogoutEvent;
 import materialpurchasing.client.serverCommunication.LoginService;
 import materialpurchasing.shared.user.User;
 import materialpurchasing.shared.user.UserType;
@@ -64,8 +65,19 @@ public class LoginController {
 		}
 	}
 	
+	// Observer Design Pattern
+		private List<LogoutEvent> logoutEventListeners = new ArrayList<>();
+
+		public void addObserver(LogoutEvent listener) {
+			this.logoutEventListeners.add(listener);
+		}
+
+		public void removeObserver(LogoutEvent listener) {
+			this.logoutEventListeners.remove(listener);
+		}
+	
 	public void sendLogOutEvent() {
-		for (LoginEvent listener : this.loginEventListeners) {
+		for (LogoutEvent listener : this.logoutEventListeners) {
 			listener.logOut();
 		}
 	}
@@ -106,6 +118,7 @@ public class LoginController {
 	}
 	
 	public void logout() {
+		this.sendLogOutEvent();
 		this.currentUser=null;
 	}
 

@@ -159,11 +159,4 @@ public class LoginPage implements IsWidget, LoginEvent {
 		dialog.add(new Label(label));
 		dialog.show();
 	}
-
-	@Override
-	public void logOut() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

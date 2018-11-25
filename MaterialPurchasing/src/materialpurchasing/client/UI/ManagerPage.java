@@ -204,7 +204,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (products.isValid() && amountField.isValid() && deadlineField.getValue() != null) {
-							ProductPlanController.getInstance().addBaseComponent(products.getCurrentValue(),
+							ProductionPlanController.getInstance().addBaseComponent(products.getCurrentValue(),
 									amountField.getCurrentValue(), deadlineField.getValue());
 							dialog.hide();
 						}
@@ -275,7 +275,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 					@Override
 					public void onSelect(SelectEvent event) {
 						if (products.isValid() && amountField.isValid() && deadlineField.getValue() != null) {
-							ProductPlanController.getInstance().modifyProductPlan(currentProductionPlan.getId(),
+							ProductionPlanController.getInstance().modifyProductPlan(currentProductionPlan.getId(),
 									products.getCurrentValue(), amountField.getCurrentValue(),
 									deadlineField.getValue());
 							dialog.hide();
@@ -305,7 +305,7 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 				dialog.getButton(PredefinedButton.YES).addSelectHandler(new SelectHandler() {
 					@Override
 					public void onSelect(SelectEvent event) {
-						ProductPlanController.getInstance().removeBaseComponent(currentProductionPlan.getId());
+						ProductionPlanController.getInstance().removeBaseComponent(currentProductionPlan.getId());
 						dialog.hide();
 					}
 				});

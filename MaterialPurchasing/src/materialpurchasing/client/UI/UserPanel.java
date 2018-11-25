@@ -19,8 +19,9 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import materialpurchasing.client.UI.image.ImageResources;
 import materialpurchasing.client.controllers.LoginController;
 import materialpurchasing.client.events.LoginEvent;
+import materialpurchasing.client.events.LogoutEvent;
 
-public class UserPanel extends Component implements IsWidget, LoginEvent {
+public class UserPanel extends Component implements IsWidget, LoginEvent,LogoutEvent {
 	
 	private String user;
 	
