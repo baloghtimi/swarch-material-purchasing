@@ -37,8 +37,6 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 import materialpurchasing.client.controllers.ProductController;
 import materialpurchasing.client.controllers.ProductionPlanController;
 import materialpurchasing.client.events.ProductionPlanEvent;
-import materialpurchasing.shared.component.BaseComponent;
-import materialpurchasing.shared.component.Component;
 import materialpurchasing.shared.product.Product;
 import materialpurchasing.shared.product.ProductionPlan;
 
@@ -49,10 +47,13 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 	private Grid<ProductionPlan> grid;
 	private ProductionPlan currentProductionPlan;
 	private Toolbar toolbar;
+	private Dialog messageDialog = new Dialog();
 
 	public ManagerPage(String user) {
 		ProductionPlanController.getInstance().addObserver(this);
 		this.user = user;
+		
+		
 	}
 
 	@Override
@@ -226,12 +227,6 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 		});
 		List<Product> products = new ArrayList<>();
 		products = ProductController.getInstance().getCurrentProducts();
-		if (products.isEmpty()) {
-			ArrayList<Component> components = new ArrayList<>();
-			components.add(new BaseComponent(1L, "Component1", 1, 1));
-			products = new ArrayList<>();
-			products.add(new Product(1L, "Product1", components));
-		}
 		store.replaceAll(products);
 
 		LabelProvider<Product> labelProvider = new LabelProvider<Product>() {
@@ -326,20 +321,20 @@ public class ManagerPage implements IsWidget, ProductionPlanEvent {
 	}
 
 	private void showDialog(String label) {
-		final Dialog dialog = new Dialog();
-		dialog.setHeadingText("Message");
-		dialog.setPredefinedButtons(PredefinedButton.OK);
-		dialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+		messageDialog.clear();
+		messageDialog.setHeadingText("Message");
+		messageDialog.setPredefinedButtons(PredefinedButton.OK);
+		messageDialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				refreshProductionPlanList();
-				dialog.hide();
+				messageDialog.hide();
 			}
 		});
-		dialog.setClosable(false);
-		dialog.setResizable(false);
-		dialog.add(new Label(label));
-		dialog.show();
+		messageDialog.setClosable(false);
+		messageDialog.setResizable(false);
+		messageDialog.add(new Label(label));
+		messageDialog.show();
 	}
 
 	@Override

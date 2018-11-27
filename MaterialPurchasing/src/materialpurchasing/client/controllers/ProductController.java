@@ -63,7 +63,7 @@ public class ProductController {
 		}
 	}
 
-	public void addProduct(String name, ArrayList<Component> components) {
+	public void addProduct(String name, List<Component> components) {
 		Product p = new Product(id, name, components);
 		currentProducts.put(id, p);
 		ps.addProduct(p);
@@ -72,7 +72,7 @@ public class ProductController {
 		this.sendProductAddedEvent(true);
 	}
 
-	public void modifyProduct(Long cid, String name, ArrayList<Component> components) {
+	public void modifyProduct(Long cid, String name, List<Component> components) {
 		Product p = new Product(cid, name, components);
 		currentProducts.put(cid, p);
 		ps.modifyProduct(p);

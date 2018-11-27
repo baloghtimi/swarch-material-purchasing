@@ -36,7 +36,7 @@ public class UserPanel extends Component implements IsWidget, LogoutEvent {
 		HBoxLayoutContainer container = new HBoxLayoutContainer(HBoxLayoutAlign.MIDDLE);
 		container.setBorders(true);
 		
-		BoxLayoutData flexLayout = new BoxLayoutData();
+		BoxLayoutData flexLayout = new BoxLayoutData(new Margins(0, 5, 0, 5));
 		flexLayout.setFlex(1);
 		container.add(new Label("Material purchasing"), flexLayout);
 		

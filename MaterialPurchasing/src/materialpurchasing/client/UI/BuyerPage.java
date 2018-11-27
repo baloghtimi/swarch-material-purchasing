@@ -50,6 +50,7 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 	private Grid<BaseComponent> grid;
 	private BaseComponent currentComponent;
 	private Toolbar toolbar;
+	private Dialog messageDialog = new Dialog();
 
 	public BuyerPage(String user) {
 		BaseComponentController.getInstance().addObserver(this);
@@ -296,87 +297,92 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 	}
 
 	private Widget createShoppingListTab() {
-		return new Label("Shopping list");
-//		ListStore<ShoppingListItem> listStore = new ListStore<ShoppingListItem>(shoppingListItemProperties.id());
-//		listStore.addAll(getShoppingList());
-//
-//		ColumnConfig<ShoppingListItem, BaseComponent> componentColumn = new ColumnConfig<ShoppingListItem, BaseComponent>(
-//				shoppingListItemProperties.component(), 200, "Component");
-//		ColumnConfig<ShoppingListItem, Integer> amountColumn = new ColumnConfig<ShoppingListItem, Integer>(
-//				shoppingListItemProperties.amount(), 200, "Amount");
-//		ColumnConfig<ShoppingListItem, Date> deadlineColumn = new ColumnConfig<ShoppingListItem, Date>(
-//				shoppingListItemProperties.deadLine(), 200, "Deadline");
-//
-//		List<ColumnConfig<ShoppingListItem, ?>> columns = new ArrayList<ColumnConfig<ShoppingListItem, ?>>();
-//		columns.add(componentColumn);
-//		columns.add(amountColumn);
-//		columns.add(deadlineColumn);
-//		ColumnModel<ShoppingListItem> columnModel = new ColumnModel<ShoppingListItem>(columns);
-//
-//		GridView<ShoppingListItem> gridView = new GridView<ShoppingListItem>();
-//		gridView.setAutoFill(true);
-//
-//		Grid<ShoppingListItem> shoppingListGrid = new Grid<ShoppingListItem>(listStore, columnModel, gridView);
-//		shoppingListGrid.setBorders(true);
-//
-//		return shoppingListGrid;
+		ListStore<ShoppingListItem> listStore = new ListStore<ShoppingListItem>(shoppingProps.key());
+		listStore.addAll(getShoppingList());
+
+		ColumnConfig<ShoppingListItem, BaseComponent> componentColumn = new ColumnConfig<ShoppingListItem, BaseComponent>(
+				shoppingProps.component(), 200, "Component");
+		ColumnConfig<ShoppingListItem, Integer> amountColumn = new ColumnConfig<ShoppingListItem, Integer>(
+				shoppingProps.amount(), 200, "Amount");
+		ColumnConfig<ShoppingListItem, Date> deadlineColumn = new ColumnConfig<ShoppingListItem, Date>(
+				shoppingProps.deadLine(), 200, "Deadline");
+
+		List<ColumnConfig<ShoppingListItem, ?>> columns = new ArrayList<ColumnConfig<ShoppingListItem, ?>>();
+		columns.add(componentColumn);
+		columns.add(amountColumn);
+		columns.add(deadlineColumn);
+		ColumnModel<ShoppingListItem> columnModel = new ColumnModel<ShoppingListItem>(columns);
+
+		GridView<ShoppingListItem> gridView = new GridView<ShoppingListItem>();
+		gridView.setAutoFill(true);
+
+		Grid<ShoppingListItem> shoppingListGrid = new Grid<ShoppingListItem>(listStore, columnModel, gridView);
+		shoppingListGrid.setBorders(true);
+
+		return shoppingListGrid;
 	}
 
-//	private List<ShoppingListItem> getShoppingList() {
-//		List<ShoppingListItem> shoppingList = new ArrayList<>();
-//		Map<BaseComponent, ShoppingListItem> shoppingMap = new HashMap<>();
-//
-//		List<ProductionPlan> plans = ProductionPlanController.getInstance().getCurrentProductionPlans();
-//		for (ProductionPlan plan : plans) {
-//			for (BaseComponent component : getBaseComponents(plan)) {
-//				if(!shoppingMap.containsKey(component)) {
-//					shoppingMap.put(component, new ShoppingListItem(component, 0, new Date()));
-//				} else {
-//					Integer newAmount = shoppingMap.get(component).getAmount() + 1;
-//					Date newDeadline = plan.getDeadline().before(shoppingMap.get(component).getDeadLine()) ? plan.getDeadline() : shoppingMap.get(component).getDeadLine();
-//					shoppingMap.put(component, new ShoppingListItem(component, newAmount, newDeadline));
-//				}
-//			}
-//		}
-//
-//		return shoppingList;
-//	}
+	private List<ShoppingListItem> getShoppingList() {
+		List<ShoppingListItem> shoppingList = new ArrayList<>();
 
-//	private List<BaseComponent> getBaseComponents(ProductionPlan plan) {
-//		List<BaseComponent> components = new ArrayList<>();
-//		for (Component component : plan.getProduct().getComponents()) {
-//			if (component instanceof BaseComponent) {
-//				components.add((BaseComponent) component);
-//			} else {
-//				collectComponents(components, (ComplexComponent) component);
-//			}
-//		}
-//		return components;
-//	}
+		List<ProductionPlan> plans = ProductionPlanController.getInstance().getCurrentProductionPlans();
+		for (ProductionPlan plan : plans) {
+			Map<BaseComponent, Integer> baseComponents = countBaseComponents(plan);
+			for (BaseComponent component : baseComponents.keySet()) {
+				Integer amount = baseComponents.get(component) * plan.getAmount();
+				
+//				Date deadline = DateUtils.addDays(plan.getDeadline(), component.getPurchaseTime() * (-1));
+				
+				Date deadline = plan.getDeadline();
+				shoppingList.add(new ShoppingListItem(component, amount, deadline));
+			}
+		}
 
-//	private void collectComponents(List<BaseComponent> list, ComplexComponent complex) {
-//		for (Component component : complex.getComponents()) {
-//			if (component instanceof BaseComponent) {
-//				list.add((BaseComponent) component);
-//			} else {
-//				collectComponents(list, (ComplexComponent) component);
-//			}
-//		}
-//	}
+		return shoppingList;
+	}
 
-//	public interface ShoppingListItemProperties extends PropertyAccess<ShoppingListItem> {
-//		@SuppressWarnings("rawtypes")
-//		@Path("name")
-//		ModelKeyProvider id();
-//
-//		ValueProvider<ShoppingListItem, BaseComponent> component();
-//
-//		ValueProvider<ShoppingListItem, Integer> amount();
-//
-//		ValueProvider<ShoppingListItem, Date> deadLine();
-//	}
-//
-//	public static ShoppingListItemProperties shoppingListItemProperties = GWT.create(ShoppingListItemProperties.class);
+	private Map<BaseComponent, Integer> countBaseComponents(ProductionPlan plan) {
+		Map<BaseComponent, Integer> compMap = new HashMap<>();
+		for (Component component : plan.getProduct().getComponents()) {
+			if (component instanceof BaseComponent) {
+				if (!compMap.containsKey(component)) {
+					compMap.put((BaseComponent) component, 1);
+				} else {
+					compMap.put((BaseComponent) component, compMap.get(component) + 1);
+				}
+			} else {
+				collectComponents(compMap, (ComplexComponent) component);
+			}
+		}
+		return compMap;
+	}
+
+	private void collectComponents(Map<BaseComponent, Integer> map, ComplexComponent complex) {
+		for (Component component : complex.getComponents()) {
+			if (component instanceof BaseComponent) {
+				if (!map.containsKey(component)) {
+					map.put((BaseComponent) component, 1);
+				} else {
+					map.put((BaseComponent) component, map.get(component) + 1);
+				}
+			} else {
+				collectComponents(map, (ComplexComponent) component);
+			}
+		}
+	}
+
+	public interface ShoppingListItemProperties extends PropertyAccess<ShoppingListItem> {
+		@Path("component")
+		ModelKeyProvider<ShoppingListItem> key();
+
+		ValueProvider<ShoppingListItem, BaseComponent> component();
+
+		ValueProvider<ShoppingListItem, Integer> amount();
+
+		ValueProvider<ShoppingListItem, Date> deadLine();
+	}
+
+	public static ShoppingListItemProperties shoppingProps = GWT.create(ShoppingListItemProperties.class);
 
 	@Override
 	public void baseComponentAdded(Boolean result) {
@@ -406,20 +412,20 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 	}
 
 	private void showDialog(String label) {
-		final Dialog dialog = new Dialog();
-		dialog.setHeadingText("Message");
-		dialog.setPredefinedButtons(PredefinedButton.OK);
-		dialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+		messageDialog.clear();
+		messageDialog.setHeadingText("Message");
+		messageDialog.setPredefinedButtons(PredefinedButton.OK);
+		messageDialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				refreshComponentList();
-				dialog.hide();
+				messageDialog.hide();
 			}
 		});
-		dialog.setClosable(false);
-		dialog.setResizable(false);
-		dialog.add(new Label(label));
-		dialog.show();
+		messageDialog.setClosable(false);
+		messageDialog.setResizable(false);
+		messageDialog.add(new Label(label));
+		messageDialog.show();
 	}
 
 }

@@ -5,14 +5,11 @@ import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.sencha.gxt.core.client.ToStringValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.util.Margins;
-import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
@@ -31,7 +28,8 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
-import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
 import materialpurchasing.client.controllers.BaseComponentController;
@@ -47,14 +45,15 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 
 	private String user;
 	private static List<ComplexComponent> complexComponents = new ArrayList<>();
-	private Grid<Component> complexComponentGrid;
+	private TreeGrid<Component> complexComponentGrid;
 	private Toolbar complexComponentToolbar;
 	private ComplexComponent currentComplexComponent;
 	private List<Product> products = new ArrayList<>();
-	private Grid<Component> productGrid;
+	private TreeGrid<Component> productGrid;
 	private Toolbar productToolbar;
 	private Product currentProduct;
 	private List<Component> components = new ArrayList<>();
+	private Dialog messageDialog = new Dialog();
 
 	public ProducerPage(String user) {
 		ComplexComponentController.getInstance().addObserver(this);
@@ -129,38 +128,64 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 		return container;
 	}
 
-	class KeyProvider implements ModelKeyProvider<Component> {
-		@Override
-		public String getKey(Component item) {
-			return (item instanceof Component ? "f-" : "m-") + item.getId().toString();
-		}
-	}
-
 	private void createComplexComponentGrid() {
-		TreeStore<Component> store = new TreeStore<Component>(new KeyProvider());
+		List<ColumnConfig<Component, ?>> columns = new ArrayList<ColumnConfig<Component, ?>>();
+		ColumnConfig<Component, String> nameCol = new ColumnConfig<Component, String>(componentProps.name(), 100, "Name");
+		columns.add(nameCol);
 
+		ColumnModel<Component> cm = new ColumnModel<Component>(columns);
+
+		TreeStore<Component> store = new TreeStore<Component>(componentProps.id());
 		complexComponents = ComplexComponentController.getInstance().getCurrentComplexComponents();
-		for (ComplexComponent complexComponent : complexComponents) {
-			store.add(complexComponent);
-			for (Component component : complexComponent.getComponents()) {
-				store.add(component);
+		for (ComplexComponent component : complexComponents) {
+			store.add(component);
+			processFolder(store, component);
+		}
+
+		complexComponentGrid = new TreeGrid<Component>(store, cm, nameCol);
+		complexComponentGrid.getView().setAutoFill(true);
+		complexComponentGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Component>() {
+			@Override
+			public void onSelectionChanged(SelectionChangedEvent<Component> se) {
+				if (complexComponentGrid.getSelectionModel().getSelectedItem() instanceof ComplexComponent) {
+					complexComponentToolbar.setModificationMode(true);
+					currentComplexComponent = (ComplexComponent) complexComponentGrid.getSelectionModel().getSelectedItem();
+				}
+			}
+		});
+	}
+	
+	private void createProductGrid() {
+		List<ColumnConfig<Component, ?>> columns = new ArrayList<ColumnConfig<Component, ?>>();
+		ColumnConfig<Component, String> nameCol = new ColumnConfig<Component, String>(componentProps.name(), 100, "Name");
+		columns.add(nameCol);
+
+		ColumnModel<Component> cm = new ColumnModel<Component>(columns);
+
+		TreeStore<Component> store = new TreeStore<Component>(componentProps.id());
+
+		products = ProductController.getInstance().getCurrentProducts();
+		for (Product product : products) {
+			store.add(product);
+			for (Component component : product.getComponents()) {
+				store.add(product, component);
 				if (component instanceof ComplexComponent) {
 					processFolder(store, (ComplexComponent) component);
 				}
 			}
 		}
 
-		ColumnConfig<Component, String> nameCol = new ColumnConfig<Component, String>(
-				new ToStringValueProvider<Component>("name"));
-		nameCol.setHeader("Name");
-
-		List<ColumnConfig<Component, ?>> columns = new ArrayList<ColumnConfig<Component, ?>>();
-		columns.add(nameCol);
-
-		ColumnModel<Component> cm = new ColumnModel<Component>(columns);
-
-		complexComponentGrid = new TreeGrid<Component>(store, cm, nameCol);
-		complexComponentGrid.getView().setAutoExpandColumn(nameCol);
+		productGrid = new TreeGrid<Component>(store, cm, nameCol);
+		productGrid.getView().setAutoFill(true);
+		productGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Component>() {
+			@Override
+			public void onSelectionChanged(SelectionChangedEvent<Component> se) {
+				if (productGrid.getSelectionModel().getSelectedItem() instanceof Product) {
+					productToolbar.setModificationMode(true);
+					currentProduct = (Product) productGrid.getSelectionModel().getSelectedItem();
+				}
+			}
+		});
 	}
 
 	private void processFolder(TreeStore<Component> store, ComplexComponent folder) {
@@ -314,15 +339,13 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 	}
 
 	private DualListField<Component, String> createComponentDualListFieldForAddition() {
-		ComponentProperties props = GWT.create(ComponentProperties.class);
-
-		ListStore<Component> from = new ListStore<Component>(props.id());
+		ListStore<Component> from = new ListStore<Component>(componentProps.id());
 		refreshComponentList();
-		from.replaceAll(components);
+		from.addAll(components);
 
-		ListStore<Component> to = new ListStore<Component>(props.id());
+		ListStore<Component> to = new ListStore<Component>(componentProps.id());
 
-		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, props.nameProp(),
+		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, componentProps.name(),
 				new TextCell());
 		field.setEnableDnd(true);
 		field.setMode(Mode.INSERT);
@@ -331,17 +354,15 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 	}
 
 	private DualListField<Component, String> createComplexComponentDualListFieldForModification() {
-		ComponentProperties props = GWT.create(ComponentProperties.class);
-
-		ListStore<Component> to = new ListStore<Component>(props.id());
+		ListStore<Component> to = new ListStore<Component>(componentProps.id());
 		to.addAll(currentComplexComponent.getComponents());
 
-		ListStore<Component> from = new ListStore<Component>(props.id());
+		ListStore<Component> from = new ListStore<Component>(componentProps.id());
 		refreshComponentList();
 		components.removeAll(currentComplexComponent.getComponents());
 		from.addAll(components);
 
-		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, props.nameProp(),
+		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, componentProps.name(),
 				new TextCell());
 		field.setEnableDnd(true);
 		field.setMode(Mode.INSERT);
@@ -350,17 +371,15 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 	}
 
 	private DualListField<Component, String> createProductComponentDualListFieldForModification() {
-		ComponentProperties props = GWT.create(ComponentProperties.class);
-
-		ListStore<Component> to = new ListStore<Component>(props.id());
+		ListStore<Component> to = new ListStore<Component>(componentProps.id());
 		to.addAll(currentProduct.getComponents());
 
-		ListStore<Component> from = new ListStore<Component>(props.id());
+		ListStore<Component> from = new ListStore<Component>(componentProps.id());
 		refreshComponentList();
 		components.removeAll(currentProduct.getComponents());
 		from.addAll(components);
 
-		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, props.nameProp(),
+		final DualListField<Component, String> field = new DualListField<Component, String>(from, to, componentProps.name(),
 				new TextCell());
 		field.setEnableDnd(true);
 		field.setMode(Mode.INSERT);
@@ -368,41 +387,13 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 		return field;
 	}
 
-	interface ComponentProperties extends PropertyAccess<Component> {
+	public interface ComponentProperties extends PropertyAccess<Component> {
 		ModelKeyProvider<Component> id();
 
-		LabelProvider<Component> name();
-
-		@Path("name")
-		ValueProvider<Component, String> nameProp();
+		ValueProvider<Component, String> name();
 	}
-
-	private void createProductGrid() {
-		TreeStore<Component> store = new TreeStore<Component>(new KeyProvider());
-
-		products = ProductController.getInstance().getCurrentProducts();
-		for (Product product : products) {
-			store.add(product);
-			for (Component component : product.getComponents()) {
-				store.add(component);
-				if (component instanceof ComplexComponent) {
-					processFolder(store, (ComplexComponent) component);
-				}
-			}
-		}
-
-		ColumnConfig<Component, String> nameCol = new ColumnConfig<Component, String>(
-				new ToStringValueProvider<Component>("name"));
-		nameCol.setHeader("Name");
-
-		List<ColumnConfig<Component, ?>> columns = new ArrayList<ColumnConfig<Component, ?>>();
-		columns.add(nameCol);
-
-		ColumnModel<Component> cm = new ColumnModel<Component>(columns);
-
-		productGrid = new TreeGrid<Component>(store, cm, nameCol);
-		productGrid.getView().setAutoExpandColumn(nameCol);
-	}
+	
+	public static ComponentProperties componentProps = GWT.create(ComponentProperties.class);
 
 	private Toolbar createProductToolbar() {
 		productToolbar = new Toolbar();
@@ -598,21 +589,21 @@ public class ProducerPage implements IsWidget, ComplexComponentEvent, ProductEve
 	}
 
 	private void showDialog(String label) {
-		final Dialog dialog = new Dialog();
-		dialog.setHeadingText("Message");
-		dialog.setPredefinedButtons(PredefinedButton.OK);
-		dialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
+		messageDialog.clear();
+		messageDialog.setHeadingText("Message");
+		messageDialog.setPredefinedButtons(PredefinedButton.OK);
+		messageDialog.getButton(PredefinedButton.OK).addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
 				refreshComplexComponentList();
 				refreshProductList();
-				dialog.hide();
+				messageDialog.hide();
 			}
 		});
-		dialog.setClosable(false);
-		dialog.setResizable(false);
-		dialog.add(new Label(label));
-		dialog.show();
+		messageDialog.setClosable(false);
+		messageDialog.setResizable(false);
+		messageDialog.add(new Label(label));
+		messageDialog.show();
 	}
 
 }

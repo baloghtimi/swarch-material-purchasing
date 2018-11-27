@@ -32,6 +32,8 @@ import materialpurchasing.client.events.LoginEvent;
 import materialpurchasing.shared.user.UserType;
 
 public class LoginPage implements IsWidget, LoginEvent {
+	
+	private Dialog messageDialog = new Dialog();
 
 	public LoginPage() {
 		LoginController.getInstance().addObserver(this);
@@ -74,6 +76,8 @@ public class LoginPage implements IsWidget, LoginEvent {
 			@Override
 			public void onSelect(SelectEvent event) {
 				LoginController.getInstance().login(username.getCurrentValue(), password.getCurrentValue());
+				username.clear();
+				password.clear();
 			}
 		};
 
@@ -106,6 +110,10 @@ public class LoginPage implements IsWidget, LoginEvent {
 			public void onSelect(SelectEvent event) {
 				if (password.getCurrentValue().equals(passwordAgain.getCurrentValue())) {
 					LoginController.getInstance().register(username.getCurrentValue(), password.getCurrentValue(), userType.getCurrentValue());
+					username.clear();
+					password.clear();
+					passwordAgain.clear();
+					userType.clear();
 				} else {
 					showDialog("The two passwords are not the same.");
 				}
@@ -190,11 +198,11 @@ public class LoginPage implements IsWidget, LoginEvent {
 	}
 
 	private void showDialog(String label) {
-		Dialog dialog = new Dialog();
-		dialog.setPredefinedButtons(PredefinedButton.OK);
-		dialog.setHideOnButtonClick(true);
-		dialog.setResizable(false);
-		dialog.add(new Label(label));
-		dialog.show();
+		messageDialog.clear();
+		messageDialog.setPredefinedButtons(PredefinedButton.OK);
+		messageDialog.setHideOnButtonClick(true);
+		messageDialog.setResizable(false);
+		messageDialog.add(new Label(label));
+		messageDialog.show();
 	}
 }
