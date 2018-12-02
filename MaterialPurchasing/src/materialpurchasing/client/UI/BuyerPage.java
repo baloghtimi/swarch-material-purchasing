@@ -117,7 +117,6 @@ public class BuyerPage implements IsWidget, BaseComponentEvent {
 
 		GridView<BaseComponent> gridView = new GridView<BaseComponent>();
 		gridView.setAutoFill(true);
-//		gridView.setAutoExpandColumn(nameColumn);
 
 		grid = new Grid<BaseComponent>(listStore, columnModel, gridView);
 		grid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<BaseComponent>() {

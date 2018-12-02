@@ -11,8 +11,6 @@ import materialpurchasing.shared.product.Product;
 import materialpurchasing.shared.product.ProductionPlan;
 
 public class ProductionPlanController {
-	Long id = Long.MIN_VALUE;
-
 	HashMap<Long, ProductionPlan> currentProductionPlans = new HashMap<Long, ProductionPlan>();
 
 	// Singelton Design Pattern
@@ -66,11 +64,11 @@ public class ProductionPlanController {
 		}
 
 		public void addProductionPlan(Product product, Integer amount, Date deadline) {
-			ProductionPlan p=new ProductionPlan(id,product,amount,deadline);
-			currentProductionPlans.put(id,p);
+			ProductionPlan p=new ProductionPlan(Id.getInstance().ID,product,amount,deadline);
+			currentProductionPlans.put(Id.getInstance().ID,p);
 			pps.addProductionPlan(p);
 			//
-			id++;
+			Id.getInstance().ID++;
 			this.sendProductionPlanAddedEvent(true);
 		}
 		

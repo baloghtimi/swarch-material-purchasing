@@ -10,8 +10,6 @@ import materialpurchasing.shared.component.ComplexComponent;
 import materialpurchasing.shared.component.Component;
 
 public class ComplexComponentController {
-	Long id = Long.MIN_VALUE;
-
 	HashMap<Long, ComplexComponent> currentCC = new HashMap<Long, ComplexComponent>();
 	
 	ComplexComponentService ccs=new ComplexComponentService();
@@ -64,12 +62,12 @@ public class ComplexComponentController {
 	}
 	
 	public void addComplexComponent(String name, List<Component> components) {
-		ComplexComponent cc=new ComplexComponent(id,name);
+		ComplexComponent cc=new ComplexComponent(Id.getInstance().ID,name);
 		cc.setComponents(components);
-		currentCC.put(id,cc);
+		currentCC.put(Id.getInstance().ID,cc);
 		ccs.addComplexComponent(cc);
 		//
-		id++;
+		Id.getInstance().ID++;
 		this.sendComplexComponentAddedEvent(true);
 	}
 	

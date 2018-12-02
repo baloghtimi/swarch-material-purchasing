@@ -12,8 +12,6 @@ public class BaseComponentController {
 
 	BaseComponentService bcs = new BaseComponentService();
 
-	Long id = Long.MIN_VALUE;
-
 	HashMap<Long, BaseComponent> currentBC = new HashMap<Long, BaseComponent>();
 
 	// Singelton Design Pattern
@@ -60,10 +58,10 @@ public class BaseComponentController {
 	}
 
 	public void addBaseComponent(String name, Integer price, Integer acquireTime) {
-		currentBC.put(id, new BaseComponent(id, name, price, acquireTime));
-		bcs.addBaseComponent(new BaseComponent(id, name, price, acquireTime));
+		currentBC.put(Id.getInstance().ID, new BaseComponent(Id.getInstance().ID, name, price, acquireTime));
+		bcs.addBaseComponent(new BaseComponent(Id.getInstance().ID, name, price, acquireTime));
 		//
-		id++;
+		Id.getInstance().ID++;
 		this.sendBaseComponentAddedEvent(true);
 	}
 

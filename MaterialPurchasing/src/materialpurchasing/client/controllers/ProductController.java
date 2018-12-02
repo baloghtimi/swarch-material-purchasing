@@ -10,8 +10,6 @@ import materialpurchasing.shared.component.Component;
 import materialpurchasing.shared.product.Product;
 
 public class ProductController {
-	Long id = Long.MIN_VALUE;
-
 	HashMap<Long, Product> currentProducts = new HashMap<Long, Product>();
 
 	ProductService ps = new ProductService();
@@ -64,11 +62,11 @@ public class ProductController {
 	}
 
 	public void addProduct(String name, List<Component> components) {
-		Product p = new Product(id, name, components);
-		currentProducts.put(id, p);
+		Product p = new Product(Id.getInstance().ID, name, components);
+		currentProducts.put(Id.getInstance().ID, p);
 		ps.addProduct(p);
 		//
-		id++;
+		Id.getInstance().ID++;
 		this.sendProductAddedEvent(true);
 	}
 
